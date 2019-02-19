@@ -1,0 +1,460 @@
+{
+	"info": {
+		"_postman_id": "fd1b18d8-debd-40f7-8dd3-9a59460b3cfd",
+		"name": "Cnode",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "主题\b发布验证",
+			"item": [
+				{
+					"name": "发布主题",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "62655794-b7c2-4785-a696-4e3fdbd10ca2",
+								"exec": [
+									"pm.environment.set(\"title\", \"1234567890\");",
+									"pm.environment.set(\"tab\", \"ask\");",
+									"pm.environment.set(\"content\", \"0987654321\");"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "7ab44b54-3714-41ea-83af-f70f73be5d5f",
+								"exec": [
+									"var url = pm.globals.get(\"server_url\");",
+									"console.log(\"++++++++++++++++++++++\",url);",
+									"pm.environment.set(\"abc\", \"123456\");",
+									"",
+									"var v = pm.variables.get(\"abc\");",
+									"console.log(\"------------\",v);",
+									"",
+									"//拿到\b服务器响应结果 并转化为json数据类型",
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"服务器响应结果中\bsuccess字段值为true\", function () {",
+									"",
+									"    //   jsonData = {",
+									"    //      \"success\": True,",
+									"    //      \"topic_id\": \"5c67b21d93910c6aef9d3ce7\"}",
+									"",
+									"    //打印输出",
+									"    console.log(\"JSON DATA============\",jsonData['success'],jsonData['topic_id']);",
+									"    // 手动设置一个环境变量",
+									"    pm.globals.set(\"topic_id\", jsonData['topic_id']); ",
+									"    // 添加断言",
+									"    pm.expect(jsonData['success']).to.eql(true);",
+									"});",
+									"",
+									"",
+									"",
+									"pm.test(\"状态码为200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"pm.test(\"包含字符串\", function () {",
+									"    pm.expect(pm.response.text()).to.include('\"success\":true,');",
+									"});",
+									"pm.test(\"Response time is less than 200ms\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(200);",
+									"});",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"// var schema = {",
+									"//   \"items\": {",
+									"//     \"type\": \"boolean\"",
+									"//   }",
+									"// };",
+									"",
+									"// var data1 = [true, false];",
+									"// var data2 = [true, 123];",
+									"",
+									"// pm.test('Schema is valid', function() {",
+									"//   pm.expect(tv4.validate(data1, schema)).to.be.true;",
+									"//   pm.expect(tv4.validate(data2, schema)).to.be.true;",
+									"// });"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/x-www-form-urlencoded",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "accesstoken",
+									"value": "3333a0fb-6dd8-439e-813b-2c3a5213a154",
+									"type": "text"
+								},
+								{
+									"key": "title",
+									"value": "{{title}}",
+									"type": "text"
+								},
+								{
+									"key": "tab",
+									"value": "{{tab}}",
+									"type": "text"
+								},
+								{
+									"key": "content",
+									"value": "{{content}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{server_url}}/topics",
+							"host": [
+								"{{server_url}}"
+							],
+							"path": [
+								"topics"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "主题详情",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "61e3eafb-1186-4424-a1f0-fc0d33f08064",
+								"exec": [
+									"var jsonData = pm.response.json(); ",
+									"// 实际结果值 （服务器返回值）",
+									"var title = jsonData['data']['title'];",
+									"var content = jsonData['data']['content'];",
+									"var tab = jsonData['data']['tab'];",
+									"",
+									"",
+									"// 我们的期望值",
+									"",
+									"var expect_title = pm.variables.get(\"title\"); ",
+									"var expect_tab =  pm.variables.get(\"tab\"); ",
+									"var expect_content = pm.variables.get(\"content\"); ",
+									"",
+									"",
+									"// console.log(\"期望结果,\",expect_title,expect_tab,expect_content)",
+									"",
+									"// console.log(\"主题详情\", title,content,tab)",
+									"",
+									"pm.test(\"检查title字段\", function () {",
+									"    pm.expect(title).to.eql(expect_title);",
+									"});",
+									"pm.test(\"检查tab字段\", function () {",
+									"    pm.expect(tab).to.eql(expect_tab);",
+									"});",
+									"pm.test(\"检查content字段\", function () {",
+									"    pm.expect(content).to.eql(expect_content);",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{server_url}}/topic/5c67b96c93910c6aef9d3ed9?mdrender=false",
+							"host": [
+								"{{server_url}}"
+							],
+							"path": [
+								"topic",
+								"5c67b96c93910c6aef9d3ed9"
+							],
+							"query": [
+								{
+									"key": "mdrender",
+									"value": "false"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "csvdata",
+			"item": [
+				{
+					"name": "发布主题",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "62655794-b7c2-4785-a696-4e3fdbd10ca2",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "7ab44b54-3714-41ea-83af-f70f73be5d5f",
+								"exec": [
+									"",
+									"//拿到\b服务器响应结果 并转化为json数据类型",
+									"var jsonData = pm.response.json();",
+									"var expect_status_code = pm.variables.get(\"expect_status_code\");",
+									"pm.test(\"状态码\"+expect_status_code, function () {",
+									"    ",
+									"    ",
+									"    pm.response.to.have.status(expect_status_code);",
+									"});",
+									"",
+									"var status = pm.variables.get(\"status\");",
+									"",
+									"if(status == 'success'){",
+									"    pm.test(\"包含字符串\", function () {",
+									"        pm.expect(pm.response.text()).to.include('\"success\":true,');",
+									"    });",
+									"    pm.test(\"服务器响应结果中success字段值为true\", function () {",
+									"",
+									"        //   jsonData = {",
+									"        //      \"success\": True,",
+									"        //      \"topic_id\": \"5c67b21d93910c6aef9d3ce7\"}",
+									"        //打印输出",
+									"        console.log(\"JSON DATA============\",jsonData['success'],jsonData['topic_id']);",
+									"        // 手动设置一个环境变量",
+									"        pm.globals.set(\"topic_id\", jsonData['topic_id']); ",
+									"        // 添加断言",
+									"        pm.expect(jsonData['success']).to.eql(true);",
+									"    });",
+									"}",
+									"",
+									"pm.test(\"Response time is less than 200ms\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(200);",
+									"});",
+									"",
+									"",
+									"",
+									"",
+									"",
+									"// var schema = {",
+									"//   \"items\": {",
+									"//     \"type\": \"boolean\"",
+									"//   }",
+									"// };",
+									"",
+									"// var data1 = [true, false];",
+									"// var data2 = [true, 123];",
+									"",
+									"// pm.test('Schema is valid', function() {",
+									"//   pm.expect(tv4.validate(data1, schema)).to.be.true;",
+									"//   pm.expect(tv4.validate(data2, schema)).to.be.true;",
+									"// });"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "accesstoken",
+									"value": "3333a0fb-6dd8-439e-813b-2c3a5213a154",
+									"type": "text"
+								},
+								{
+									"key": "title",
+									"value": "{{title}}",
+									"type": "text"
+								},
+								{
+									"key": "tab",
+									"value": "{{tab}}",
+									"type": "text"
+								},
+								{
+									"key": "content",
+									"value": "{{content}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{server_url}}/topics",
+							"host": [
+								"{{server_url}}"
+							],
+							"path": [
+								"topics"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "主题详情",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "61e3eafb-1186-4424-a1f0-fc0d33f08064",
+								"exec": [
+									"",
+									"",
+									"var status = pm.variables.get(\"status\");",
+									"",
+									"if(status == \"success\"){",
+									"   var jsonData = pm.response.json(); ",
+									"    // 实际结果值 （服务器返回值）",
+									"    var title = jsonData['data']['title'];",
+									"    var content = jsonData['data']['content'];",
+									"    var tab = jsonData['data']['tab'];",
+									"    ",
+									"    ",
+									"    // 我们的期望值",
+									"    ",
+									"    var expect_title = String(pm.variables.get(\"title\")); ",
+									"    var expect_tab =  String( pm.variables.get(\"tab\")); ",
+									"    var expect_content =String(pm.variables.get(\"content\")); ",
+									"    ",
+									"    ",
+									"    // console.log(\"期望结果,\",expect_title,expect_tab,expect_content)",
+									"    ",
+									"    // console.log(\"主题详情\", title,content,tab)",
+									"    ",
+									"    pm.test(\"检查title字段\", function () {",
+									"        pm.expect(title).to.eql(expect_title);",
+									"    });",
+									"    pm.test(\"检查tab字段\", function () {",
+									"        pm.expect(tab).to.eql(expect_tab);",
+									"    });",
+									"    pm.test(\"检查content字段\", function () {",
+									"        pm.expect(content).to.eql(expect_content);",
+									"    }); ",
+									"}",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "645c9a74-2d2d-4b5d-96c3-cbd16d1680a5",
+								"exec": [
+									"",
+									"var status = pm.variables.get(\"status\");",
+									"",
+									"if(status == \"fail\"){",
+									"    ",
+									"    ",
+									"    pm.environment.set(\"topic_id\", \"5c67c29b93910c6aef9d3fa4\");",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{server_url}}/topic/{{topic_id}}?mdrender=false",
+							"host": [
+								"{{server_url}}"
+							],
+							"path": [
+								"topic",
+								"{{topic_id}}"
+							],
+							"query": [
+								{
+									"key": "mdrender",
+									"value": "false"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "主题首页",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{server_url}}/topics?page=2&tab=ask&limit=20&mdrender=true",
+					"host": [
+						"{{server_url}}"
+					],
+					"path": [
+						"topics"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "2"
+						},
+						{
+							"key": "tab",
+							"value": "ask"
+						},
+						{
+							"key": "limit",
+							"value": "20"
+						},
+						{
+							"key": "mdrender",
+							"value": "true"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
